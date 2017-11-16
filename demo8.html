@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo8</title>
+</head>
+<style>
+    *{
+        margin:0px
+    }
+</style>
+<body>
+
+<script src="js/three.min.js"></script>
+<script src="js/H.js"></script>
+<script>
+    var renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+    renderer.setSize(cWidth, cHeight);
+    renderer.setClearColor('#999999');
+    document.body.appendChild(renderer.domElement);
+
+    var scene = new THREE.Scene();
+
+    var camera = new THREE.PerspectiveCamera(50, cWidth / cHeight, 1, 1000);
+    camera.position.set(3, 3, 6);
+    camera.lookAt(scene.position);
+    scene.add(camera);
+
+    //创建一个正方体
+    var geometry = new THREE.CubeGeometry(2, 2, 2);
+    var material = new THREE.MeshLambertMaterial({
+        color: '#336666',
+        emissive: '#00CC99',
+        opacity: 0.75
+    });
+
+    var cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    renderer.render(scene, camera);
+</script>
+</body>
+</html>

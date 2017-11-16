@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>demo2</title>
+    </head>
+    <style>
+        *{margin:0px;}
+    </style>
+    <body>
+        <script src="js/three.js"></script>
+        <script src="js/stats.min.js"></script>
+        <script src="js/tweenjs.min.js"></script>
+        <script>
+            var renderer,camera,scene,cube,line;
+
+            var width = document.body.clientWidth,
+                height = document.body.clientHeight;
+
+            init();
+
+            function init(){
+                //设置渲染 引擎
+                renderer = new THREE.WebGLRenderer({
+                    antialias:true
+                });
+                renderer.setSize(width, height);
+                document.body.appendChild(renderer.domElement);
+
+                //设置场景
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color('#ccc');
+
+                //设置摄像头
+                camera = new THREE.PerspectiveCamera(120, width / height, 1, 10000);
+                camera.position.z = 7;
+                camera.position.x = 0;
+                camera.position.y = 2;
+//
+                console.log(scene.position);
+                camera.lookAt(scene.position);
+
+
+                //ok 开始添加一个正方形柱子进来试一试
+                var geometry = new THREE.CubeGeometry(1,2,1);
+                var material = new THREE.MeshBasicMaterial({color:'#339966'});
+
+                cube = new THREE.Mesh(geometry, material);
+                scene.add(cube);
+
+                //ok添加进来一条线试试
+                var geometry = new THREE.Geometry();
+                var material = new THREE.LineBasicMaterial({
+                    vertexColors: true
+                });
+                var color1 = new THREE.Color('#CC0000');
+                var color2 = new THREE.Color('#CC33FF');
+
+                var p1 = new THREE.Vector3(0, 0, 0);
+                var p2 = new THREE.Vector3(0, 5, 0);
+
+                geometry.vertices.push(p1);
+                geometry.vertices.push(p2);
+                geometry.colors.push(color1, color2);
+
+                line = new THREE.Line(geometry, material, THREE.LineSegments);
+                scene.add(line);
+
+                //初始化性能检测
+                stats = new Stats();
+                document.body.appendChild(stats.dom);
+
+                animate();
+            }
+
+            function animate(){ //主要动画
+                render();
+                requestAnimationFrame(animate);
+            }
+
+            function render() {  //主要逻辑帧
+//                if (camera.position.z < 10) {
+//                    camera.position.z += 0.01;
+//                } else {
+//                    camera.position.x += 0.01;
+//                }
+//                cube.position.y -= 0.01;
+                stats.update();
+                renderer.render(scene, camera);
+            }
+        </script>
+    </body>
+</html>

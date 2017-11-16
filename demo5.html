@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo5</title>
+</head>
+<style>
+    *{
+        margin:0px;
+    }
+</style>
+<body>
+
+<div id="mainCanvas"></div>
+
+<script src="js/three.min.js"></script>
+<script>
+    //创建渲染引擎
+    var renderer = new THREE.WebGLRenderer({
+        antialias:true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor('#000');
+    document.body.appendChild(renderer.domElement);
+
+
+    //创建画布
+    var scene = new THREE.Scene();
+
+    //创建摄像机
+    var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 0, 5);
+//    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    camera.lookAt(scene.position);
+
+    //材质
+    var material = new THREE.MeshBasicMaterial({
+        color: "#fff",
+    });
+
+    //创建平面
+    var planeGeo = new THREE.PlaneGeometry(1.5, 1.5);
+    var plane = new THREE.Mesh(planeGeo, material);
+    plane.position.x = 1;
+    scene.add(plane);
+
+    //创建三角形 使用同一种材质
+    var triGeo = new THREE.Geometry();
+    triGeo.vertices = [new THREE.Vector3(0, -0.8, 0),
+        new THREE.Vector3(-2, -0.8- 0), new THREE.Vector3(-1, 0.8, 0)];
+    triGeo.faces.push(new THREE.Face3(0,2,1));
+    var triangle = new THREE.Mesh(triGeo, material);
+    scene.add(triangle);
+
+
+
+    //开始渲染
+    renderer.render(scene, camera);
+</script>
+</body>
+</html>
