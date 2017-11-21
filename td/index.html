@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>td</title>
+</head>
+<style>
+    *{
+        margin:0px;
+    }
+    #world{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(#e4e0ba, #f7d0aa);
+    }
+</style>
+<body>
+
+    <div id="world"></div>
+    <script src="../js/three.min.js"></script>
+    <script src="../js/tweenjs.js"></script>
+    <script src="js/H.js"></script>
+    <script src="js/Terrain.js"></script>
+    <script src="js/Enemy.js"></script>
+    <script src="js/EventLister.js"></script>
+    <script>
+
+        //页面加载完毕后开始初始化函数
+        window.addEventListener('load', init, false);
+
+        function init(){
+            createScene(); //创建场景, 相机, 渲染器
+
+            createLights();  //生成光源
+
+            createTerrain();  //创建游戏地形
+
+            createEnemy();
+
+            loop();   //主循环
+        }
+
+        /**
+         *  游戏主循环
+         */
+        function loop(){
+            renderer.render(scene, camera);
+
+
+            //各种监听事件
+            /*注册事件, 注册滚轮滑动*/
+            if(document.addEventListener){
+                document.addEventListener('DOMMouseScroll',scrollFunc,false);
+            }
+            window.onmousewheel=document.onmousewheel=scrollFunc;
+
+            enemy.updateYao();
+            requestAnimationFrame(loop);
+        }
+
+        /**
+         * 生成敌人
+         */
+        var enemy
+        function createEnemy() {
+            enemy = new Enemy();
+            enemy.mesh.position.z += 20;
+            scene.add(enemy.mesh);
+        }
+
+        /**
+         *  生成地形
+         */
+        function createTerrain(){
+            var terrain = new Terrain();
+            scene.add(terrain.mesh);
+        }
+
+        /**
+         * 创建场景， 相机， 渲染器
+         */
+        function createScene() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
+
+            //创建相机
+            aspectRatio = WIDTH / HEIGHT;
+            fieldOfView = 60;
+            nearPlane = 1;
+            farPlane = 10000;
+
+            camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+
+            camera.position.x = 0;
+            camera.position.y = -100;
+            camera.position.z = 100;
+
+            camera.lookAt(scene.position);
+
+            renderer = new THREE.WebGLRenderer({
+                alpha : true,  //开启背景透明使用 world的背景
+                antialias: true,  //开启抗锯齿
+            });
+
+            //设置渲染尺寸
+            renderer.setSize(WIDTH, HEIGHT);
+
+
+            //打开渲染器的阴影地图
+            renderer.shadowMap.enable = true;
+
+            //将渲染器添加到我们的div当中
+            container = document.getElementById('world');
+            container.appendChild(renderer.domElement);
+        }
+
+
+        var hemisphereLight, shadowLight;
+        //创建光源
+        function createLights(){
+            //半球光就是渐变的光
+            //第一个参数是天空的颜色，第二个参数是地上的颜色， 第三个参数是光源的强度
+            hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
+
+            //方向光是从一个特定的方向照射
+            //类似太阳，所有光源是平行的
+            //第一个参数是光照颜色， 第二个参数是光源强度
+            shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+
+            //设置光源的方向
+            //位置不同，方向光作用于物体的面也不同，看到的颜色也不同
+            shadowLight.position.set(150, 350, 350);
+
+            //定义可见域的投射阴影
+            shadowLight.shadow.camera.left = -400;
+            shadowLight.shadow.camera.right = 400;
+            shadowLight.shadow.camera.top = 400;
+            shadowLight.shadow.camera.bottom = -400;
+            shadowLight.shadow.camera.near = 1;
+            shadowLight.shadow.camera.far = 1000;
+
+            //定义阴影的分辨率，虽然分辨率越高越好， 但是需要付出更加昂贵的代价维持高性能的表现。
+            shadowLight.shadow.mapSize.width = 2048;
+            shadowLight.shadow.mapSize.height = 2048;
+
+            //添加至场景当中
+            scene.add(shadowLight);
+            scene.add(hemisphereLight);
+            // 环境光源修改场景中的全局颜色和使阴影更加柔和
+            ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+            scene.add(ambientLight);
+        }
+    </script>
+</body>
+</html>
